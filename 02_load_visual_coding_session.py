@@ -1,6 +1,5 @@
 """
 02_load_visual_coding_session.py
-================================
 Load one Allen Brain Observatory Visual Coding session for container 661437138
 and extract NATURAL MOVIE ONE responses, with per-session output organisation
 so the cross-session pipeline (Sessions A, B, C) can consume them in parallel.
@@ -9,9 +8,6 @@ Container 661437138 sessions (all imaged on consecutive days):
   A  — 661437140  (three_session_A:  drifting gratings + natural_movie_one + natural_movie_three)
   B  — 662351346  (three_session_B:  static gratings + natural_scenes + natural_movie_one)
   C  — 662358233  (three_session_C2: locally sparse noise + natural_movie_one + natural_movie_two)
-
-Natural movie 1 is the only stimulus present in all three sessions, which is
-why the cross-session drift analysis pivots on it.
 
 Trial structure used here:
   Each presentation of the ~30-second movie is one TRIAL ("repeat").
@@ -43,9 +39,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
 # Configuration
-# ---------------------------------------------------------------------------
 
 DEFAULT_CONTAINER = 661437138             # the original container; can override
 
@@ -53,14 +47,11 @@ CACHE_DIR     = Path.home() / "allen_cache" / "visual_coding"
 BASE_OUTPUT   = Path("outputs") / "movie1"
 STIMULUS_NAME = "natural_movie_one"
 
-# Allen session-type strings. Natural movie 1 is present in all of these.
 SESSION_A_TYPES = {"three_session_a"}
 SESSION_B_TYPES = {"three_session_b"}
 SESSION_C_TYPES = {"three_session_c", "three_session_c2"}
 
-# ---------------------------------------------------------------------------
 # CLI
-# ---------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
@@ -107,11 +98,7 @@ if missing:
 print(f"Container {CONTAINER_ID}: resolved sessions A={SESSIONS['A']}, "
       f"B={SESSIONS['B']}, C={SESSIONS['C']}")
 
-
-# ---------------------------------------------------------------------------
 # Per-session loader
-# ---------------------------------------------------------------------------
-
 def load_one_session(session_label: str):
     experiment_id = SESSIONS[session_label]
     out_dir       = CONTAINER_OUTPUT / session_label
@@ -128,16 +115,8 @@ def load_one_session(session_label: str):
     dataset = boc.get_ophys_experiment_data(experiment_id)
     print("  Done.\n")
 
-    # -- 1. L0-deconvolved events matrix ------------------------------------
-    # Allen publishes L0 events for the Visual Coding 2P dataset. Pull them
-    # EXPLICITLY via the cache, rather than relying on dataset.get_l0_events()
-    # which is absent in some SDK builds. The previous hasattr() fallback
-    # silently substituted dF/F — a signed trace autocorrelated at ~0.95 per
-    # frame by the GCaMP6f decay kernel, which is the wrong substrate for
-    # frame-rate noise correlations (the kernel masquerades as fast coupling).
+    
     print("--- Step 1: L0-deconvolved events matrix ---")
-    # Timestamps and cell ordering come from the dF/F trace API; the events
-    # array shares that exact time base and cell-specimen ordering.
     timestamps, _dff = dataset.get_dff_traces()
     events = boc.get_ophys_experiment_events(experiment_id)   # (n_cells, T)
     signal_name = "L0 events"
@@ -150,9 +129,7 @@ def load_one_session(session_label: str):
     print(f"  Frame rate: {1 / np.median(np.diff(timestamps)):.2f} Hz")
     print(f"  Duration:   {timestamps[-1] - timestamps[0]:.1f} s")
 
-    # Sanity gate: genuine L0 events are NON-NEGATIVE and SPARSE. If the loaded
-    # signal is mostly signed/dense it is dF/F, and the run must NOT proceed
-    # silently (this is exactly the bug that produced the earlier dF/F matrices).
+  
     neg_frac  = float(np.mean(events < 0))
     zero_frac = float(np.mean(events == 0))
     print(f"  Event sanity: {100 * neg_frac:.2f}% negative, "
@@ -166,7 +143,7 @@ def load_one_session(session_label: str):
             f"download. Refusing to write a mislabelled events_matrix."
         )
 
-    # -- 2. Natural movie 1 stimulus table → per-repeat ---------------------
+    #  2. Natural movie 1 stimulus table → per-repeat
     print(f"\n--- Step 2: {STIMULUS_NAME} stimulus table ---")
     stim_table_raw = dataset.get_stimulus_table(STIMULUS_NAME)
     print(f"  Raw stim table: {stim_table_raw.shape}")
@@ -220,14 +197,15 @@ def load_one_session(session_label: str):
                 out[c_pos] = session_matrix[s_row]
         return out
 
-    # -- 4. Running speed ---------------------------------------------------
+    # -- 4. Running speed 
+
     print("\n--- Step 4: Running speed ---")
     run_timestamps, run_speed = dataset.get_running_speed()
     def mean_run_speed(t0, t1):
         m = (run_timestamps >= t0) & (run_timestamps < t1)
         return float(np.mean(run_speed[m])) if m.sum() else np.nan
 
-    # -- 5. Per-repeat response matrix --------------------------------------
+    # -- 5. Per-repeat response matrix
     print("\n--- Step 5: Per-repeat response matrix ---")
     X_session  = np.full((n_repeats, len(session_ids)), np.nan, dtype=np.float32)
     meta_rows  = []
@@ -265,23 +243,16 @@ def load_one_session(session_label: str):
     X = align_to_container(X_session.T).T
     print(f"  Response matrix: {X.shape}  ({n_present} cols with data, {n_absent} NaN)")
 
-    # -- 6. Save -----------------------------------------------------------
+    # -- 6. Save 
     print(f"\n--- Step 6: Saving to {out_dir} ---")
     np.save(out_dir / "X_trials_neurons.npy", X)
     np.save(out_dir / "movie_repeat_frames.npy", movie_repeat_frames)
     pd.DataFrame(meta_rows).to_csv(out_dir / "trial_metadata.csv", index=False)
 
-    # cell_info per session (records which cells were present in this session)
-    # Allen-precomputed per-cell stats: keep the natural-movie-1 metrics
-    # (reliability across the 10 movie repeats, peak dF/F amplitude).
-    # The natural-scenes columns (pref_image_ns, image_sel_ns, reliability_ns)
-    # were dropped — they're stats from the natural-scenes block in Session B
-    # only and don't characterise responses to natural movie 1.
     keep_cols = ["cell_specimen_id", "area", "imaging_depth",
                  "rf_center_on_x_lsn", "rf_center_on_y_lsn",
                  "reliability_nm1", "peak_dff_nm1"]
-    # Silently drop any not present in this Allen build's cell_specimens
-    # schema (older AllenSDK versions may omit some fields).
+   
     missing = [c for c in keep_cols if c not in cell_table.columns]
     if missing:
         print(f"  Note: Allen cell_specimens table missing columns: {missing} "
@@ -298,7 +269,7 @@ def load_one_session(session_label: str):
     events_aligned = align_to_container(events)
     np.save(out_dir / "events_matrix.npy", events_aligned)
 
-    # ---- Behavioural-state side channels (needed for the next phase) -------
+    # ---- Behavioural-state side channels 
     # Running speed is always available for Visual Coding 2P. Pupil tracking is
     # only available where eye tracking didn't fail; we save it when present
     # and write an empty marker file otherwise.
@@ -340,9 +311,7 @@ def load_one_session(session_label: str):
     }
 
 
-# ---------------------------------------------------------------------------
 # Run
-# ---------------------------------------------------------------------------
 
 results = []
 for s in sessions_to_run:
