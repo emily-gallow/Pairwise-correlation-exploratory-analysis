@@ -1,2 +1,2 @@
-# Pairwise-correlation-exploratory-analysis
-MSc Neuroscience thesis investigating pairwise correlations structure across days and 
+# Neural_Pairwise-Correlation-Thesis
+MSc Neuroscience thesis investigating cross-day pairwise stability of pairwise neural correlations in mouse primary viusal cortex
