@@ -4,20 +4,18 @@
 Multi-container discovery for the cross-session natural-movie-1
 drift / functional-connectivity study.
 
-This is the FIRST step of scaling the pipeline beyond the single original
+FIRST step of scaling the pipeline beyond the single original
 container (661437138). It catalogs EVERY Visual Coding 2P experiment
 container that has a complete three-session set (A, B, and C or C2), so the
 cross-session analysis can be run across many animals.
 
-Why every complete container works:
   Natural Movie One is presented in all three session types by Allen design
   (three_session_A, three_session_B, three_session_C / three_session_C2),
   so it is the common stimulus across days for every complete container.
-  Cells are pre-matched WITHIN a container via a stable cell_specimen_id,
+  Cells are pre-matched within a container via a stable cell_specimen_id,
   which gives the tracked-across-days population for free — exactly the
   setup used in the original container.
 
-Cost:
   Metadata only — no NWB trace downloads here. The full cell-specimen table
   is fetched once (one cached download) and grouped by container to get the
   authoritative matched-cell count per container. Use --no-cell-count to
@@ -47,9 +45,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# ---------------------------------------------------------------------------
 # Configuration
-# ---------------------------------------------------------------------------
 
 CACHE_DIR   = Path.home() / "allen_cache" / "visual_coding"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -63,10 +59,6 @@ ORIGINAL_CONTAINER = 661437138          # the container used so far (for flaggin
 SESSION_A_TYPES = {"three_session_a"}
 SESSION_B_TYPES = {"three_session_b"}
 SESSION_C_TYPES = {"three_session_c", "three_session_c2"}
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -89,10 +81,6 @@ parser.add_argument("--min-matched-cells", type=int, default=0,
                          "cells in the cell-specimen table (default 0 = no filter).")
 args = parser.parse_args()
 
-# ---------------------------------------------------------------------------
-# Connect
-# ---------------------------------------------------------------------------
-
 print("=" * 68)
 print("  Visual Coding 2P — complete-container catalog (natural movie 1)")
 print("=" * 68)
@@ -104,9 +92,7 @@ from allensdk.core.brain_observatory_cache import BrainObservatoryCache
 boc = BrainObservatoryCache(manifest_file=str(CACHE_DIR / "manifest.json"))
 print("Connected.\n")
 
-# ---------------------------------------------------------------------------
 # 1. Containers (non-failed) + optional metadata filters
-# ---------------------------------------------------------------------------
 
 cont_kwargs = {}
 if args.areas:
@@ -123,9 +109,7 @@ if args.areas:
 if args.cre:
     print(f"  cre filter:   {args.cre}")
 
-# ---------------------------------------------------------------------------
 # 2. Experiments → group by container, resolve A / B / C session ids
-# ---------------------------------------------------------------------------
 
 exps = boc.get_ophys_experiments()
 by_cont      = defaultdict(dict)     # cid -> {session_type_lower: experiment_id}
@@ -159,9 +143,7 @@ def all_have_pupil(*eids):
     """Return True if eye tracking did NOT fail for every supplied experiment."""
     return all(eid is not None and not eye_fail.get(eid, False) for eid in eids)
 
-# ---------------------------------------------------------------------------
 # 3. Matched-cell count per container (one cached download, then group)
-# ---------------------------------------------------------------------------
 
 matched_per_cont = {}
 if not args.no_cell_count:
@@ -180,9 +162,7 @@ if not args.no_cell_count:
 else:
     print("\nSkipping matched-cell count (--no-cell-count).")
 
-# ---------------------------------------------------------------------------
 # 4. Build the catalog
-# ---------------------------------------------------------------------------
 
 rows = []
 for cid in sorted(valid_cids):
@@ -211,8 +191,6 @@ for cid in sorted(valid_cids):
 df = pd.DataFrame(rows)
 complete_df = df[df["complete"]].copy()
 
-# Apply downstream filters (pupil-tracking + min matched cells) BEFORE sorting,
-# so the output catalog is already in the form the batch runner will consume.
 if args.require_pupil:
     complete_df = complete_df[complete_df["has_pupil_tracking"]].copy()
     print(f"\n  --require-pupil applied: {len(complete_df)} containers remaining.")
@@ -236,9 +214,7 @@ df_sorted = pd.concat([
 ], ignore_index=True)
 df_sorted.to_csv(out_path, index=False)
 
-# ---------------------------------------------------------------------------
 # 5. Console summary
-# ---------------------------------------------------------------------------
 
 print(f"\n{'=' * 68}")
 print("  RESULTS")
