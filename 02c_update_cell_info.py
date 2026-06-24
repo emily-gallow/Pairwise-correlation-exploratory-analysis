@@ -1,6 +1,5 @@
 """
 02c_update_cell_info.py
-=======================
 Regenerate cell_info.csv for all three sessions with the natural-movie-1
 per-cell stats (reliability_nm1, peak_dff_nm1) instead of the natural-scenes
 stats (pref_image_ns, image_sel_ns, reliability_ns).
