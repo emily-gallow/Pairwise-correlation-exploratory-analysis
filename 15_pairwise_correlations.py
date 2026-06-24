@@ -1,6 +1,5 @@
 """
 15_pairwise_correlations.py
-===========================
 Per-session SIGNAL and NOISE correlation matrices for natural movie 1,
 the first analysis of the pairwise-correlation / functional-connectivity
 direction.
@@ -91,9 +90,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# ---------------------------------------------------------------------------
 # Configuration / CLI
-# ---------------------------------------------------------------------------
 
 SESSIONS = ["A", "B", "C"]
 FPS      = 30.0
@@ -139,11 +136,7 @@ print(f"  root={ROOT}  bin={args.bin_ms:.0f} ms (~{BIN_FRAMES} frame"
       f"{'s' if BIN_FRAMES != 1 else ''})"
       f"{'  [FRAME RESOLUTION]' if BIN_FRAMES == 1 else ''}")
 print("=" * 68)
-
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def present_mask(events):
     """A cell is present this session if its row isn't entirely NaN."""
@@ -242,7 +235,7 @@ def session_corrs(events, frames, bin_frames, cell_idx=None):
     Zmat = z.reshape(R * n_bins, n_p)                       # (samples, n_present)
     noise_corr, dead_noise = corr_with_dead_mask(Zmat)
 
-    # --- Sparsity diagnostics (honesty about frame-rate viability) ---------
+    # --- Sparsity diagnostics
     # Fraction of (bin,cell) entries that carry NO across-trial variability:
     # these contribute nothing to the noise estimate. High -> data-limited.
     frac_zero_var = float(np.mean(~nz))
@@ -255,9 +248,7 @@ def session_corrs(events, frames, bin_frames, cell_idx=None):
                 mean_event=mean_event)
 
 
-# ---------------------------------------------------------------------------
 # Per-session computation (headline = frame resolution)
-# ---------------------------------------------------------------------------
 
 results   = {}     # S -> dict of arrays/stats
 summary   = []
@@ -341,9 +332,6 @@ for s in SESSIONS:
           f"zero-variance (bin,cell) = {100*res['frac_zero_var']:.1f}%   "
           f"fully-silent cells = {100*res['frac_dead']:.1f}%")
 
-# ---------------------------------------------------------------------------
-# Summary CSV
-# ---------------------------------------------------------------------------
 
 df = pd.DataFrame(summary)
 out_csv = ROOT / "pairwise_corr_summary.csv"
@@ -351,9 +339,8 @@ df.to_csv(out_csv, index=False)
 print(f"\nSaved {out_csv}")
 print(df.to_string(index=False))
 
-# ---------------------------------------------------------------------------
 # Timescale robustness sweep (does NOT overwrite main outputs)
-# ---------------------------------------------------------------------------
+
 
 if args.sweep:
     sweep_ms     = [33.0, 100.0, 250.0, 500.0]
@@ -396,9 +383,7 @@ if args.sweep:
     print("  frame' stays high, the *pattern* of which pairs are coupled is")
     print("  robust to timescale even though the magnitude scales.")
 
-# ---------------------------------------------------------------------------
 # Figure: rows = sessions, cols = signal heatmap | noise heatmap | scatter
-# ---------------------------------------------------------------------------
 
 def auto_clim(matrices, percentile=99.0):
     """Data-driven colour limit: the given percentile of |off-diagonal r| values
