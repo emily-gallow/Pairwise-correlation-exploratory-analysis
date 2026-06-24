@@ -1,6 +1,5 @@
 """
 02b_intersect_active.py
-=======================
 After scripts 02 and 03 have run for all three sessions, compute the
 intersection of active cells across A, B, and C. This is the canonical
 subset of neurons used for cross-session analyses (RDM, assembly comparison,
