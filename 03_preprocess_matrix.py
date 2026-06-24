@@ -1,6 +1,5 @@
 """
 03_preprocess_matrix.py
-=======================
 Clean and z-score the per-repeat response matrix from a given session
 (natural movie 1 trial structure).
 
@@ -37,16 +36,12 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
 # Configuration
-# ---------------------------------------------------------------------------
 
 MIN_MEAN_EVENT_RATE = 1e-4
 SESSIONS_ALL        = ["A", "B", "C"]
 
-# ---------------------------------------------------------------------------
 # CLI
-# ---------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument(
@@ -63,9 +58,7 @@ sessions_to_run = SESSIONS_ALL if args.session == "all" else [args.session]
 BASE_OUTPUT = Path(args.root)
 
 
-# ---------------------------------------------------------------------------
 # Per-session preprocess
-# ---------------------------------------------------------------------------
 
 def preprocess_one(session_label: str):
     in_dir = out_dir = BASE_OUTPUT / session_label
@@ -115,10 +108,6 @@ def preprocess_one(session_label: str):
     print(f"    trial_metadata_clean.csv  {meta.shape}\n")
     return {"session": session_label, "n_active": n_active, "n_repeats": n_trials_raw}
 
-
-# ---------------------------------------------------------------------------
-# Run
-# ---------------------------------------------------------------------------
 
 results = [preprocess_one(s) for s in sessions_to_run]
 
