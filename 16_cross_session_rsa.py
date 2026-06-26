@@ -1,6 +1,5 @@
 """
 16_cross_session_rsa.py
-=======================
 Second-order RSA — is the pairwise-correlation STRUCTURE preserved across days?
 
 Single-neuron tuning is known to drift across days (Deitch/Rubin/Ziv 2021 on
@@ -61,9 +60,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# ---------------------------------------------------------------------------
 # Config / CLI
-# ---------------------------------------------------------------------------
 
 SESSIONS = ["A", "B", "C"]
 DAY      = {"A": "day 95", "B": "day 96", "C": "day 97"}
@@ -91,10 +88,6 @@ print(f"  root={ROOT}  bin={args.bin_ms:.0f} ms (~{BIN_FRAMES} frame"
       f"{'s' if BIN_FRAMES != 1 else ''})  metric={args.metric}")
 print("=" * 70)
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 def present_mask(events):
     return ~np.all(np.isnan(events), axis=1)
@@ -165,10 +158,7 @@ def similarity(vi, vj, metric):
     return float(np.corrcoef(a, b)[0, 1]), good
 
 
-# ---------------------------------------------------------------------------
 # Load matched cells + per-session correlation matrices
-# ---------------------------------------------------------------------------
-
 present = {}
 events  = {}
 frames  = {}
@@ -204,9 +194,7 @@ for s in SESSIONS:
     print(f"  Session {s} ({DAY[s]}): {R} repeats x {T.shape[1]} bins "
           f"on {len(shared)} matched cells")
 
-# ---------------------------------------------------------------------------
 # RSA matrices (3x3) + split-half reliability on the diagonal
-# ---------------------------------------------------------------------------
 
 def rsa_matched(half_by_session):
     """Data-matched RSA: EVERY entry is estimated from 5-repeat half-networks,
@@ -250,9 +238,7 @@ full_sig = rsa_fulldata(sig)
 full_noi = rsa_fulldata(noi)
 IDX = {s: k for k, s in enumerate(SESSIONS)}
 
-# ---------------------------------------------------------------------------
 # Report + CSV
-# ---------------------------------------------------------------------------
 
 rows = []
 for label, M, F in [("signal", rsa_sig, full_sig), ("noise", rsa_noi, full_noi)]:
@@ -280,9 +266,7 @@ for label, M, F in [("signal", rsa_sig, full_sig), ("noise", rsa_noi, full_noi)]
 pd.DataFrame(rows).to_csv(ROOT / "cross_session_rsa.csv", index=False)
 print(f"\nSaved {ROOT / 'cross_session_rsa.csv'}")
 
-# ---------------------------------------------------------------------------
 # Figure: rows = signal / noise; cols 0-2 = day-pair scatters; col 3 = RSA heatmap
-# ---------------------------------------------------------------------------
 
 fig, axes = plt.subplots(2, 4, figsize=(18, 9))
 # scatter substrate = 5-rep half (h1) so the figure is on the same data budget
