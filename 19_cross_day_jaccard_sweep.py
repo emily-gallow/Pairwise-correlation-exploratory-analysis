@@ -1,6 +1,5 @@
 """
 19_cross_day_jaccard_sweep.py
-=============================
 Cross-day functional stability vs a within-day reliability ceiling, swept
 across binarisation thresholds.
 
@@ -66,9 +65,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# ---------------------------------------------------------------------------
 # Config / CLI
-# ---------------------------------------------------------------------------
 
 SESSIONS = ["A", "B", "C"]
 DAY      = {"A": "day 95", "B": "day 96", "C": "day 97"}
@@ -98,9 +95,7 @@ print(f"  root={ROOT}  density {args.min_pct:g}-{args.max_pct:g}%  "
 print("=" * 70)
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def present_mask(ev):
     return ~np.all(np.isnan(ev), axis=1)
@@ -150,9 +145,7 @@ def jaccard(mask1, mask2):
     return inter / union if union else np.nan
 
 
-# ---------------------------------------------------------------------------
 # Build matched-cell correlation matrices (full + the two repeat-halves)
-# ---------------------------------------------------------------------------
 
 present, events, frames = {}, {}, {}
 for s in SESSIONS:
@@ -177,9 +170,7 @@ for s in SESSIONS:
     print(f"  Session {s} ({DAY[s]}): {T.shape[0]} repeats -> two {h}-repeat "
           f"halves, {T.shape[1]} bins")
 
-# ---------------------------------------------------------------------------
 # Sweep
-# ---------------------------------------------------------------------------
 
 cross_curves = {p: [] for p in CROSS}
 ceiling_per  = {s: [] for s in SESSIONS}
@@ -205,9 +196,7 @@ ceiling_mean = ceiling_arr.mean(axis=0)
 ceiling_lo, ceiling_hi = ceiling_arr.min(axis=0), ceiling_arr.max(axis=0)
 chance_curve = np.array(chance_curve)
 
-# ---------------------------------------------------------------------------
 # CSV
-# ---------------------------------------------------------------------------
 
 out = pd.DataFrame({"density_pct": densities * 100,
                     "J_AB": cross_curves[("A", "B")],
@@ -229,9 +218,7 @@ print(f"    ceiling (within-day) = {ceiling_mean[i10]:.3f}  "
       f"[{ceiling_lo[i10]:.3f}-{ceiling_hi[i10]:.3f}]")
 print(f"    chance = {chance_curve[i10]:.3f}")
 
-# ---------------------------------------------------------------------------
 # Figure
-# ---------------------------------------------------------------------------
 
 fig, ax = plt.subplots(figsize=(9, 6.2))
 # Convention: Threshold % = % of weakest |r| pairs zeroed (higher = stricter).
