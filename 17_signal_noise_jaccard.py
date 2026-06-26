@@ -1,6 +1,5 @@
 """
 17_signal_noise_jaccard.py
-==========================
 Compare the TOPOLOGY of the signal- and noise-correlation networks, within
 each session, by sweeping a density threshold and measuring how much their
 binarised edge sets overlap (Jaccard similarity).
@@ -67,9 +66,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib.patches import Patch
 
-# ---------------------------------------------------------------------------
 # Config / CLI
-# ---------------------------------------------------------------------------
 
 SESSIONS = ["A", "B", "C"]
 DAY      = {"A": "day 95", "B": "day 96", "C": "day 97"}
@@ -103,9 +100,7 @@ print(f"  root={ROOT}  density {args.min_pct:g}–{args.max_pct:g}% step {args.s
 print("=" * 70)
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def upper_vec(C):
     """Upper-triangular off-diagonal vector + its index tuple + n."""
@@ -152,10 +147,7 @@ def detect_substrate(root):
     except Exception:
         return "unknown substrate", float("nan")
 
-
-# ---------------------------------------------------------------------------
 # Sweep
-# ---------------------------------------------------------------------------
 
 substrate, neg_frac = detect_substrate(ROOT)
 print(f"\n  Data substrate: {substrate}"
@@ -203,18 +195,14 @@ for s in SESSIONS:
     print(f"    Jaccard @ top 10%: {j10:.3f}  ({r10:.2f}× chance)")
     print(f"    Jaccard @ top 20%: {j20:.3f}  ({r20:.2f}× chance)")
 
-# ---------------------------------------------------------------------------
 # CSV
-# ---------------------------------------------------------------------------
 
 df = pd.DataFrame(rows)
 out_csv = ROOT / "signal_noise_jaccard.csv"
 df.to_csv(out_csv, index=False)
 print(f"\nSaved {out_csv}")
 
-# ---------------------------------------------------------------------------
 # Figure 1 — Jaccard vs density curves
-# ---------------------------------------------------------------------------
 
 fig, ax = plt.subplots(figsize=(8.5, 6.0))
 # Convention: Threshold % = % of weakest |r| pairs zeroed (higher = stricter).
@@ -244,9 +232,7 @@ fig.savefig(out_png, dpi=150, bbox_inches="tight")
 plt.close(fig)
 print(f"Saved {out_png}")
 
-# ---------------------------------------------------------------------------
 # Figure 1b — RATIO over chance (curves rise bottom-left to top-right)
-# ---------------------------------------------------------------------------
 # Same x-axis (Threshold %), but y = Jaccard / chance. At permissive thresholds
 # both are similar so ratio ~ 1; as the threshold tightens, chance falls faster
 # than the observed Jaccard, so the ratio grows — showing how *meaningful* the
@@ -274,9 +260,7 @@ fig.savefig(out_png_ratio, dpi=150, bbox_inches="tight")
 plt.close(fig)
 print(f"Saved {out_png_ratio}")
 
-# ---------------------------------------------------------------------------
 # Figure 2 — binarised adjacency comparison at one or more densities
-# ---------------------------------------------------------------------------
 # Loops over args.adj_density (now a list) so we can render the strict view
 # (top 10% kept = threshold 90%) AND a permissive view (top 50% = threshold 50%)
 # side by side as separate files.
