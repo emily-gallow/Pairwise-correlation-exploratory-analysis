@@ -1,6 +1,5 @@
 """
 22_day_gap_stats.py
-===================
 Quantify the cross-day RSA drop from 1-day to 2-day gaps across animals.
 
 Reads per-container day_gap_scatter.csv files (same inputs as script 21) and
