@@ -1,6 +1,6 @@
 """
 20_day_gap_scatter.py
-=====================
+
 Synthesis figure for ONE animal: cross-day RSA similarity plotted against the
 number of days between sessions.
 
@@ -41,9 +41,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# ---------------------------------------------------------------------------
 # Config / CLI
-# ---------------------------------------------------------------------------
 
 PAIRS     = [("A", "B"), ("B", "C"), ("A", "C")]
 PAIR_GAP  = {("A", "B"): 1, ("B", "C"): 1, ("A", "C"): 2}
@@ -69,9 +67,7 @@ args = parser.parse_args()
 
 ROOT = Path(args.root)
 
-# ---------------------------------------------------------------------------
 # Load values
-# ---------------------------------------------------------------------------
 
 df = pd.read_csv(ROOT / "cross_session_rsa.csv")
 
@@ -107,9 +103,7 @@ long_df = pd.DataFrame(long_rows)
 long_df.to_csv(ROOT / "day_gap_scatter.csv", index=False)
 print(long_df.to_string(index=False))
 
-# ---------------------------------------------------------------------------
 # Figure: signal | noise, 3 dots + line per panel
-# ---------------------------------------------------------------------------
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5.6))
 
