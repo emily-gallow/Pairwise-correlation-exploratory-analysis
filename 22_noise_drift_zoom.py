@@ -1,6 +1,6 @@
 """
 22_noise_drift_zoom.py
-======================
+
 Companion to script 21. Zooms into the noise-correlation panel of the
 multi-animal day-gap synthesis so the bulk of the data (≈ 0 to ≈ 0.1 r) is
 visible, and quantifies the magnitude of the drop from 1-day apart to 2-days
@@ -46,9 +46,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-# ---------------------------------------------------------------------------
 # Config / CLI
-# ---------------------------------------------------------------------------
 
 PAIR_COLOR = {"A-B": "#a05a8a",   # purple (matches scripts 20/21)
               "B-C": "#d63384",   # magenta
@@ -76,9 +74,7 @@ noise = df[df["type"] == "noise"].copy()
 if noise.empty:
     raise SystemExit("No noise rows in input CSV.")
 
-# ---------------------------------------------------------------------------
 # Per-animal pairing: 1-day value (mean of A-B and B-C) vs 2-day value (A-C)
-# ---------------------------------------------------------------------------
 
 per_animal = []
 for cid, g in noise.groupby("container_id"):
@@ -101,9 +97,7 @@ n_animals = len(pa)
 
 pa.to_csv(ROOT / f"noise_drift_zoom_{args.metric}.csv", index=False)
 
-# ---------------------------------------------------------------------------
 # Group-level statistics
-# ---------------------------------------------------------------------------
 
 def mean_sem(x):
     x = np.asarray(x, dtype=float)
@@ -128,9 +122,7 @@ above_2d = (pa["two_day"]      > args.ymax).sum()
 clipped_animals = int(((pa["one_day_mean"] > args.ymax) |
                        (pa["two_day"]      > args.ymax)).sum())
 
-# ---------------------------------------------------------------------------
 # Figure
-# ---------------------------------------------------------------------------
 
 fig, ax = plt.subplots(figsize=(9, 6.2))
 
