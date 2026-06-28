@@ -1,6 +1,5 @@
 """
 27_formal_stats.py
-==================
 Formal across-animal statistics for every headline cross-day comparison.
 
 scipy is not available in the analysis environment, so all inference is done
@@ -62,9 +61,7 @@ OUT  = ROOT / "stats"
 OUT.mkdir(exist_ok=True)
 rng  = np.random.default_rng(args.seed)
 
-# ---------------------------------------------------------------------------
 # Inference primitives
-# ---------------------------------------------------------------------------
 
 def paired_perm_test(d, B=10000, rng=None):
     """Two-sided sign-flip permutation p-value for paired mean(d) = 0.
@@ -128,10 +125,7 @@ def paired_test_block(d, name, extra=None):
     if extra: out.update(extra)
     return out
 
-
-# ---------------------------------------------------------------------------
 # Build per-animal 1-day vs 2-day paired tables for matched & fulldata
-# ---------------------------------------------------------------------------
 
 def per_animal_pairs(df):
     """For each (container, type), return 1-day value (mean A-B & B-C) and
@@ -176,10 +170,6 @@ for metric in ("matched", "fulldata"):
 # running- and pupil-based session-pair classifications are produced by
 # scripts 29, 33, 34 (state-match family) and reported separately, not via
 # this script.
-
-# ---------------------------------------------------------------------------
-# Save: CSV + readable markdown
-# ---------------------------------------------------------------------------
 
 res_df = pd.DataFrame(rows)
 res_df.to_csv(OUT / "formal_stats.csv", index=False)
