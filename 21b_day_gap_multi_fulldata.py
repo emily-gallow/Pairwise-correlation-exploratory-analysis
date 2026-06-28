@@ -1,6 +1,6 @@
 """
 21b_day_gap_multi_fulldata.py
-=============================
+
 Build the multi-mouse fulldata 10-rep cross-day RSA figure directly from each
 container's cross_session_rsa.csv (which already has AB/BC/AC fulldata columns).
 
@@ -27,12 +27,7 @@ PAIR_COLOR = {"A-B": "#a05a8a", "B-C": "#d63384", "A-C": "#ffd60a"}
 PAIR_ORDER = ["A-B", "B-C", "A-C"]
 JITTER = {"A-B": -0.05, "B-C": +0.05, "A-C": 0.0}
 
-# ---------------------------------------------------------------------------
 # Aggregate cohort table
-# ---------------------------------------------------------------------------
-# Only include numeric-named container folders — earlier exploratory runs left
-# behind a 'not using?' folder containing stale cross_session_rsa.csv from a
-# different methodology, which would otherwise inflate the cohort by 1 mouse.
 rows = []
 for f in sorted(ROOT.glob("*/cross_session_rsa.csv")):
     cid = f.parent.name
@@ -54,9 +49,7 @@ all_df.to_csv(out_csv, index=False)
 n_animals = all_df["container_id"].nunique()
 print(f"Cohort fulldata table: {n_animals} containers, {len(all_df)} rows -> {out_csv}")
 
-# ---------------------------------------------------------------------------
 # Figure: same layout as script 21, signal | noise, shared y-axis
-# ---------------------------------------------------------------------------
 fig, axes = plt.subplots(1, 2, figsize=(13, 5.8), sharey=True)
 
 for ax, tp, title in [(axes[0], "signal", "Signal correlation"),
