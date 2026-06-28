@@ -1,6 +1,6 @@
 """
 21_day_gap_multi.py
-===================
+
 Multi-animal version of the day-gap synthesis figure (script 20).
 
 Walks outputs/movie1/*/day_gap_scatter.csv (one per container produced by
@@ -35,9 +35,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-# ---------------------------------------------------------------------------
 # Config / CLI
-# ---------------------------------------------------------------------------
 
 PAIR_COLOR = {"A-B": "#a05a8a",   # purple (matches script 20)
               "B-C": "#d63384",   # magenta
@@ -62,9 +60,7 @@ args = parser.parse_args()
 
 ROOT = Path(args.root)
 
-# ---------------------------------------------------------------------------
 # Walk container subfolders and collect day_gap_scatter.csv files.
-# ---------------------------------------------------------------------------
 
 # CRITICAL: only numeric-named container folders. Earlier exploratory runs
 # left behind 'not using?'-style folders that can leak stale data into the
@@ -95,9 +91,7 @@ all_df.to_csv(out_csv, index=False)
 print(f"Saved {out_csv}  ({len(all_df)} rows from "
       f"{all_df['container_id'].nunique()} containers)")
 
-# ---------------------------------------------------------------------------
 # Figure: signal | noise — one 3-dot trace per animal (script 20 × N)
-# ---------------------------------------------------------------------------
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5.8), sharey=True)
 
