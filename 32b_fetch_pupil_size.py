@@ -1,6 +1,5 @@
 """
 32b_fetch_pupil_size.py
-=======================
 
 Fetch raw pupil-area timecourses from Allen eye-gaze files, resample them onto
 the same event timestamps used by the existing session outputs, and save
