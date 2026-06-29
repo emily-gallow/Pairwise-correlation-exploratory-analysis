@@ -1,6 +1,6 @@
 """
 38_top_overlap_enrichment.py
-============================
+
 Top-X% pair overlap across days — does a pair that is among the strongest
 on one day remain among the strongest on the next day?
 
@@ -94,9 +94,8 @@ ROOT = Path(args.root)
 rng = np.random.default_rng(args.seed)
 
 
-# ---------------------------------------------------------------------------
 # Helpers (signal-correlation recipe identical to script 28, 31, 36, 37)
-# ---------------------------------------------------------------------------
+
 
 def present_mask(events):
     return ~np.all(np.isnan(events), axis=1)
@@ -144,9 +143,7 @@ def sign_flip_p(d, B, rng):
     return float((np.sum(np.abs(null) >= np.abs(obs)) + 1) / (B + 1))
 
 
-# ---------------------------------------------------------------------------
 # Walk containers — per-mouse top-X overlap and fold enrichment
-# ---------------------------------------------------------------------------
 
 print("=" * 70)
 print(" Top-X pair overlap across days (asymmetric selection, fold over chance)")
@@ -207,9 +204,7 @@ print(f"\nSaved per-mouse table: {ROOT / 'top_overlap_enrichment.csv'} "
       f"({len(df)} rows, {df['container_id'].nunique()} mice)")
 
 
-# ---------------------------------------------------------------------------
 # Cohort aggregation + above-chance & paired 1d-vs-2d tests
-# ---------------------------------------------------------------------------
 
 print(f"\nBootstrap CIs ({args.boot} resamples) + permutation tests ({args.perm} perms)")
 stat_rows = []
@@ -288,11 +283,9 @@ for _, r in paired.iterrows():
           f"perm p = {r['perm_p']:.4f}{sig}")
 
 
-# ---------------------------------------------------------------------------
 # Figure: 2 panels
 #   Left:  observed overlap fraction vs threshold (chance baseline as dashed)
 #   Right: fold enrichment vs threshold (chance = 1.0 horizontal)
-# ---------------------------------------------------------------------------
 
 fig, axes = plt.subplots(1, 2, figsize=(13.5, 5.6))
 
