@@ -1,6 +1,5 @@
 """
 41_session_rsa_trial_mismatch.py
-================================
 Session-level 10-trial cross-day RSA vs trial-level mean running mismatch.
 
 Same biological question as script 40 (does running mismatch predict lower
@@ -72,9 +71,7 @@ args = parser.parse_args()
 rng = np.random.default_rng(args.seed)
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def present_mask(events):
     return ~np.all(np.isnan(events), axis=1)
@@ -211,9 +208,7 @@ def within_mouse_y_shuffle_p(sub_df, x_col, y_col, mouse_col, B, rng):
     return float((np.sum(np.abs(nulls) >= np.abs(obs)) + 1) / (len(nulls) + 1))
 
 
-# ---------------------------------------------------------------------------
 # Main loop
-# ---------------------------------------------------------------------------
 
 print("=" * 70)
 print(" Session-level 10-trial RSA vs trial-level running mismatch (mean)")
@@ -280,11 +275,9 @@ print(f"\n  Saved {ROOT / 'session_rsa_trial_mismatch.csv'}  "
       f"({len(df)} rows from {df['container_id'].nunique()} mice)")
 
 
-# ---------------------------------------------------------------------------
 # Formal stats: Spearman rho with mouse-level bootstrap CI + within-mouse
 # y-shuffle permutation. Run for SIGNAL and NOISE RSA separately.
 # All pairs / 1-day only / 2-day only.
-# ---------------------------------------------------------------------------
 
 ana = df.dropna(subset=["signal_rsa",
                         "mean_trial_pair_running_mismatch",
@@ -320,9 +313,7 @@ run_all = stat_rows[0]; run_1d = stat_rows[1]; run_2d = stat_rows[2]
 pup_all = stat_rows[3]; pup_1d = stat_rows[4]; pup_2d = stat_rows[5]
 
 
-# ---------------------------------------------------------------------------
 # Plot: 2 panels (signal left, noise right)
-# ---------------------------------------------------------------------------
 
 def fmt_p(p):
     if not np.isfinite(p): return "n.s."
