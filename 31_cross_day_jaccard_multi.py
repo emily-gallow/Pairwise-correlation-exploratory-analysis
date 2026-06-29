@@ -1,6 +1,6 @@
 """
 31_cross_day_jaccard_multi.py
-=============================
+
 Cohort-level cross-day Jaccard sweep — multi-animal replacement for the
 single-animal Figure 2 (cross_day_adjacency.png) in the thesis figure set.
 
@@ -77,9 +77,7 @@ ROOT = Path(args.root)
 densities = np.linspace(args.d_min, args.d_max, args.n_densities)
 
 
-# ---------------------------------------------------------------------------
 # Per-session signal & noise matrices (fulldata 10-rep, frame rate)
-# ---------------------------------------------------------------------------
 
 def present_mask(events): return ~np.all(np.isnan(events), axis=1)
 
@@ -146,9 +144,7 @@ def jaccard(A_bool, B_bool):
     return float((a & b).sum()) / union
 
 
-# ---------------------------------------------------------------------------
 # Walk containers and compute Jaccard curves
-# ---------------------------------------------------------------------------
 
 cid_dirs = [p for p in sorted(ROOT.iterdir())
             if p.is_dir() and p.name.isdigit()
@@ -189,9 +185,7 @@ df.to_csv(out_csv, index=False)
 print(f"\nSaved {out_csv}  ({len(df)} rows from "
       f"{df['container_id'].nunique()} containers)")
 
-# ---------------------------------------------------------------------------
 # Figure: signal | noise, per-animal grey traces + cohort mean ± SEM
-# ---------------------------------------------------------------------------
 
 n_animals = df["container_id"].nunique()
 chance = densities / (2 - densities)
@@ -252,9 +246,6 @@ fig.savefig(out_png, dpi=150, bbox_inches="tight")
 plt.close(fig)
 print(f"Saved {out_png}")
 
-# ---------------------------------------------------------------------------
-# Headline summary numbers at a few representative densities, for the caption
-# ---------------------------------------------------------------------------
 
 print("\n--- Cohort means at key densities (fulldata 10-rep) ---")
 unique_densities = sorted(df["density"].unique())
