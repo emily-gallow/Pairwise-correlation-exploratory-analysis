@@ -1,6 +1,5 @@
 """
 36_topX_threshold_rsa.py
-========================
 Continuous cross-day RSA at the strongest pairs only — does the top-X% of
 the within-day signal correlation distribution preserve its cross-day
 Pearson r as the threshold becomes stricter?
@@ -77,10 +76,8 @@ ROOT = Path(args.root)
 rng = np.random.default_rng(args.seed)
 
 
-# ---------------------------------------------------------------------------
 # Per-session signal correlation matrix (matched cells, fulldata 10-rep,
 # frame rate — same recipe as scripts 28, 31, 36)
-# ---------------------------------------------------------------------------
 
 def present_mask(events):
     return ~np.all(np.isnan(events), axis=1)
@@ -130,9 +127,7 @@ def top_pct_cross_day_rsa(C_a, C_b, top_pct):
     return float(np.corrcoef(a_sel, b_sel)[0, 1])
 
 
-# ---------------------------------------------------------------------------
 # Walk containers and compute per-pair table
-# ---------------------------------------------------------------------------
 
 print("=" * 70)
 print(" Computing top-X% threshold cross-day RSA per mouse")
@@ -176,9 +171,7 @@ print(f"\nSaved per-pair table: {ROOT / 'topX_threshold_rsa.csv'} "
       f"({len(df)} rows, {df['container_id'].nunique()} mice)")
 
 
-# ---------------------------------------------------------------------------
 # Cohort aggregation with 95% bootstrap CIs (resample mice with replacement)
-# ---------------------------------------------------------------------------
 
 def boot_mean_ci(values, B=10000, alpha=0.05, rng=None):
     """Mean + percentile bootstrap CI on a 1D array. Resampling at the
@@ -227,9 +220,7 @@ for thresh in THRESHOLDS:
               f"95% CI [{row['ci_lo']:+.3f}, {row['ci_hi']:+.3f}] {sig}")
 
 
-# ---------------------------------------------------------------------------
 # Figure: cross-day RSA vs threshold % strict (right) ← → permissive (left)
-# ---------------------------------------------------------------------------
 
 fig, ax = plt.subplots(figsize=(9, 6))
 
