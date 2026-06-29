@@ -1,6 +1,5 @@
 """
 30_new_containers.py
-====================
 After rebuilding the catalog with broader scope (script 01b without
 --require-pupil and/or with broader --cre/--areas), this script diffs the
 new catalog against the existing per-container output folders and prints:
