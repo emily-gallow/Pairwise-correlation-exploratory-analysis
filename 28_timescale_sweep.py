@@ -1,6 +1,6 @@
 """
 28_timescale_sweep.py
-=====================
+
 Timescale sensitivity sweep on the cross-day RSA — does the noise null
 survive at intermediate bin widths where noise correlations are typically
 most cleanly measurable (Bair, Zohary & Newsome 2001; Cohen & Kohn 2011)?
@@ -68,9 +68,7 @@ args = parser.parse_args()
 ROOT = Path(args.root)
 rng = np.random.default_rng(args.seed)
 
-# ---------------------------------------------------------------------------
 # Core math (mirrors script 15 — kept inline so this script is self-contained)
-# ---------------------------------------------------------------------------
 
 def present_mask(events): return ~np.all(np.isnan(events), axis=1)
 
@@ -127,9 +125,7 @@ def upper_tri_corr(A, B):
     return float(np.corrcoef(a[good], b[good])[0, 1])
 
 
-# ---------------------------------------------------------------------------
 # Sweep
-# ---------------------------------------------------------------------------
 
 cid_dirs = [p for p in sorted(ROOT.iterdir())
             if p.is_dir() and p.name.isdigit()
@@ -163,9 +159,7 @@ raw = pd.DataFrame(rows)
 raw.to_csv(ROOT / "timescale_sweep_rsa.csv", index=False)
 print(f"\nSaved {ROOT / 'timescale_sweep_rsa.csv'}  ({len(raw)} rows)")
 
-# ---------------------------------------------------------------------------
 # Per-animal 1-day vs 2-day, paired tests per (bin_ms, type)
-# ---------------------------------------------------------------------------
 
 def paired_perm(d, B=10000, rng=None):
     d = np.asarray(d, float); d = d[np.isfinite(d)]
@@ -219,9 +213,7 @@ stats.to_csv(ROOT / "timescale_sweep_stats.csv", index=False)
 print("\nPaired-test results per bin width:")
 print(stats.to_string(index=False))
 
-# ---------------------------------------------------------------------------
 # Figure
-# ---------------------------------------------------------------------------
 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5.5), sharey=False)
 xs = np.array(args.bin_ms, dtype=float)
