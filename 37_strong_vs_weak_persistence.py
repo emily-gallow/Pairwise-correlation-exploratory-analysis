@@ -1,6 +1,5 @@
 """
 37_strong_vs_weak_persistence.py
-================================
 Asymmetric strong-vs-weak pair persistence across days.
 
 Does selecting the strongest pairs on an earlier day predict elevated pair
@@ -19,7 +18,7 @@ For each percentile X in {1, 5, 10, 15, 20, 25}:
   Top X%    = pairs with the highest |r_earlier|
   Bottom X% = pairs with the lowest  |r_earlier|
 
-We measure two persistence signatures on day Y:
+ i measure two persistence signatures on day Y:
   (1) Mean |r_Y| of the selected pairs (strength-on-day-Y).
       Compare to the population mean |r_Y| across all pairs.
       Interpretation: do these pairs collectively remain elevated
@@ -33,19 +32,6 @@ Across mice (n = 17 in the standard cohort):
   Sign-flip permutation test for the TOP - BOTTOM difference in mean |r_Y|
   at each (pair, percentile), one observation per mouse, B = 10 000.
 
-Honest framing:
-  - "Reoccur" is unpacked in two complementary senses (set membership and
-    elevated mean strength).
-  - Numbers are not symmetric: strong-end persistence is substantial; weak-
-    end persistence is at or below chance. This asymmetry is the headline
-    finding.
-  - This analysis is NOT subject to the Berkson conditioning artifact
-    visible in script 36 (topX_threshold_rsa), because each percentile bin
-    is selected on day X alone — measurement on day Y is unconditional.
-  - Rate bias still applies: high-rate cell pairs tend to have higher |r|,
-    so the "top X%" set is rate-biased. Both directions of the comparison
-    (top and bottom) inherit this bias but the TOP-vs-BOTTOM contrast is
-    what we test.
 
 Inputs (per numeric-name container):
   {root}/{cid}/{A,B,C}/events_matrix.npy
@@ -97,9 +83,7 @@ ROOT = Path(args.root)
 rng = np.random.default_rng(args.seed)
 
 
-# ---------------------------------------------------------------------------
-# Helpers (same recipe as scripts 28, 31, 36)
-# ---------------------------------------------------------------------------
+# Helpers (same as scripts 28, 31, 36)
 
 def present_mask(events):
     return ~np.all(np.isnan(events), axis=1)
@@ -150,9 +134,7 @@ def sign_flip_p(d, B, rng):
     return float((np.sum(np.abs(null) >= np.abs(obs)) + 1) / (B + 1))
 
 
-# ---------------------------------------------------------------------------
 # Walk containers, compute per-mouse persistence metrics
-# ---------------------------------------------------------------------------
 
 print("=" * 70)
 print(" Strong-vs-weak pair persistence across days (asymmetric selection)")
@@ -221,9 +203,7 @@ print(f"\nSaved per-mouse table: {ROOT / 'strong_vs_weak_persistence.csv'} "
       f"({len(df)} rows, {df['container_id'].nunique()} mice)")
 
 
-# ---------------------------------------------------------------------------
 # Cohort aggregation + sign-flip TOP-vs-BOTTOM tests
-# ---------------------------------------------------------------------------
 
 print(f"\nBootstrap CIs ({args.boot} resamples) + sign-flip tests ({args.perm} perms)")
 
@@ -288,12 +268,10 @@ for earlier, later, gap, _color in PAIRS:
               f"{r['bot_overlap_mean']:.3f}[{r['bot_overlap_lo']:.3f},{r['bot_overlap_hi']:.3f}]")
 
 
-# ---------------------------------------------------------------------------
 # Figure: 2 rows x 3 cols
 #   Row 1: mean |r_later| at selected pairs vs percentile, with population baseline
 #   Row 2: bin-overlap fraction vs percentile, with chance baseline
 #   Cols : A-B (1d), B-C (1d), A-C (2d)
-# ---------------------------------------------------------------------------
 
 fig, axes = plt.subplots(2, 3, figsize=(13.5, 8.0), sharex=True)
 
