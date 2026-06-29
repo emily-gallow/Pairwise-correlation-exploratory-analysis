@@ -1,6 +1,5 @@
 """
 41b_per_mouse_centred_check.py
-==============================
 Robustness check for Figure 5: per-mouse mean-centred cross-day RSA vs
 trial-level running mismatch.
 
@@ -63,9 +62,7 @@ args = parser.parse_args()
 rng = np.random.default_rng(args.seed)
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def rankdata_avg(x):
     x = np.asarray(x, float); n = len(x)
@@ -118,9 +115,7 @@ def within_mouse_y_shuffle_p(sub, x_col, y_col, B, rng):
     return float((np.sum(np.abs(nulls) >= np.abs(obs)) + 1) / (len(nulls) + 1))
 
 
-# ---------------------------------------------------------------------------
 # Load + per-mouse mean-centre
-# ---------------------------------------------------------------------------
 
 src = ROOT / "session_rsa_trial_mismatch.csv"
 df = pd.read_csv(src)
@@ -137,9 +132,7 @@ print(f"Centred RSA range: [{ana['rsa_centred'].min():+.3f}, "
       f"{ana['rsa_centred'].max():+.3f}]")
 
 
-# ---------------------------------------------------------------------------
 # Formal stats on centred RSA (same design as Figure 5)
-# ---------------------------------------------------------------------------
 
 print(f"\nFormal stats on per-mouse-centred RSA "
       f"(mouse-level bootstrap B = {args.boot:,}; perm B = {args.perm:,}):")
@@ -168,9 +161,7 @@ pd.DataFrame(stat_rows).to_csv(ROOT / "session_rsa_trial_mismatch_centred_stats.
                                 index=False)
 
 
-# ---------------------------------------------------------------------------
 # Plot (single panel) — centred RSA vs running mismatch
-# ---------------------------------------------------------------------------
 
 fig, ax = plt.subplots(figsize=(10.0, 6.2))
 
