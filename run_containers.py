@@ -1,6 +1,5 @@
 """
 run_containers.py
-=================
 Batch runner: takes a list of experiment container IDs and runs the full
 pipeline (02 -> 03 -> 02b -> 15 -> 16 -> 17 -> 18 -> 19 -> 20) for each one,
 writing per-container outputs to outputs/movie1/<container_id>/.
